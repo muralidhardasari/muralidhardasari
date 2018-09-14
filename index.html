@@ -1,0 +1,344 @@
+
+ <!DOCTYPE HTML>
+<html lang="English">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Muralidhar Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Muralidhar Dasari">
+    
+
+    
+    <meta name="description" content="Muralidhar Blog">
+<meta name="keywords" content="Technology, Muralidhar">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Muralidhar Blog">
+<meta property="og:url" content="http://muralidharblog.com/index.html">
+<meta property="og:site_name" content="Muralidhar Blog">
+<meta property="og:description" content="Muralidhar Blog">
+<meta property="og:locale" content="English">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Muralidhar Blog">
+<meta name="twitter:description" content="Muralidhar Blog">
+<meta name="twitter:creator" content="@muralidhar.dasari@gmail.com">
+<link rel="publisher" href="muralidhar.dasari@gmail.com">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		<!-- 
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Muralidhar Blog" title="Muralidhar Blog"/></a>
+			</div>
+			 -->
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Muralidhar Blog">Muralidhar Blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:muralidharblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main">
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/09/12/hello-world/" title="AOP - Method interception using Fody in C#" itemprop="url">AOP - Method interception using Fody in C#</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="https://plus.google.com/muralidhar.dasari@gmail.com?rel=author" title="Muralidhar Dasari" target="_blank" itemprop="author">Muralidhar Dasari</a>
+		
+  <p class="article-time">
+    <time datetime="2018-09-12T17:56:21.345Z" itemprop="datePublished"> Published 2018-09-12</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Most of the times developers try to write boilerplate code, In this we will see how we can reduce boiler plate code with the help of AOP. </p>
+<p>AOP well known to Java developers and not that prominent in .Net community. Actually, there are many AOP framework available but most of them are not straight forward. I am going to explain how simply we can implement AOP to reduce boiler plate code.</p>
+<p>Here I am considering an example, </p>
+<p>Where we have a data access layer where we write the code for accessing code</p>
+<p>Business logic layer, contains business transactions which has one or more than one data access calls, in-case of any data access method calls fails, then the data that is inserted in same transaction by other data access methods will must be roll backed.</p>
+<p>As a project stake holder, I want my developers to focus on the business transactions and data access code rather than writing a lot of boiler plate code like creating transaction, creating connection and transactions handling.</p>
+<h2 id="Example-code"><a href="#Example-code" class="headerlink" title="Example code"></a><a href="https://github.com/muralidhardasari/AopMethodInterception" target="_blank" rel="noopener">Example code</a></h2><p>SqlConnectionAspect class is an attribute class extends Attribute  implement IMethodInterceptor of Cauldron.Interception of namespace.</p>
+<p>IMethodInterceptor contains 3 methods for implementation.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public void OnEnter(Type declaringType, object instance, MethodBase methodbase, object[] values)</span><br><span class="line">public void OnException(Exception e)</span><br><span class="line">public void OnExit()</span><br></pre></td></tr></table></figure></p>
+<p>These methods are executed before, after and at the time of exception in side business logic or data access code.<br>In this aspect sql connection and transaction objects are created and preserved them inside the <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.remoting.messaging.callcontext.getdata?view=netframework-4.7.2" target="_blank" rel="noopener">CallContext</a> object, there by same objects can be business transaction. If the transaction is success transaction is committed, otherwise transaction is rolled back.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[SqlConnectionAspect]</span><br><span class="line">public void AddStudent()</span><br><span class="line">&#123;</span><br><span class="line">    //DAL Call 1</span><br><span class="line">    //DAL Call 2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>if both the DAL calls inside AddStudent() are succeeded then only SqlConnectionAspect will make the transaction as committed and developer need not worry about transaction handling every time.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a><a href="">Conclusion</a></h2><p>Similarly we can create multiple aspect attribute based on the purpose like logging aspect, exception aspect etc. And also more than once aspect can be applied on a method. eg:- if we want logging and exception on a method then we can apply as below.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[ExceptionHandlerAspect]</span><br><span class="line">[LoggingAspect]</span><br><span class="line">void Method()</span><br><span class="line">&#123;</span><br><span class="line">    //Some code goes here</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>This will help the developers only to focus on the actual business logic rather than writing lot of boiler plate code.</p>
+<p>Thanking you in-advance.</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://muralidharblog.com" target="_blank" title="Muralidhar&#39;s Blog">Muralidhar&#39;s Blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.linkedin.com/in/muralidhardasari/" target="_blank" title="Linked in">Linked in</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Muralidhar Dasari <br/>
+			Techinical Architect @ Cybage.</p>
+	</section>
+	 
+	<!-- <div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/https://github.com/muralidhardasari" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		<a href="https://twitter.com/muralidhar.dasari@gmail.com" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		<a href="https://www.facebook.com/muralidhar.dasari@gmail.com" target="_blank" class="icon-facebook" title="facebook"></a>
+		
+		
+		<a href="https://www.linkedin.com/in/muralidhar.dasari@gmail.com" target="_blank" class="icon-linkedin" title="linkedin"></a>
+		
+		
+		
+		
+		<a href="https://plus.google.com/muralidhar.dasari@gmail.com?rel=author" target="_blank" class="icon-google_plus" title="Google+"></a>
+		
+		
+		<a href="mailto:muralidhar.dasari@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div> -->
+			
+		
+
+		<p class="copyright">
+		© 2018 &nbsp;&nbsp;&nbsp;
+		Muralidhar Dasari
+		<!-- 
+		<a href="/about" target="_blank" title="Muralidhar Dasari">Muralidhar Dasari</a>
+		 -->
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+ </html>
